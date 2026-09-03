@@ -102,3 +102,38 @@ def test_reconcile_review_contradictory_date():
     assert result.status == MatchStatus.REVIEW
     assert any("Contradictory evidence (date differs by > 7 days)" in a for a in result.audit_trail)
 
+def test_reconcile_review_identical_scores():
+    bank = BankRecord(
+        record_id="B1", amount=100.0, transaction_date=datetime(2026, 9, 2),
+        description="Amazon", source=TransactionSource.BANK, reference_id="REF1"
+    )
+    # Both identical matches
+    merch1 = MerchantRecord(
+        record_id="M1", amount=100.0, transaction_date=datetime(2026, 9, 2),
+        description="Amazon", source=TransactionSource.MERCHANT, reference_id="REF1"
+    )
+    merch2 = MerchantRecord(
+        record_id="M2", amount=100.0, transaction_date=datetime(2026, 9, 2),
+        description="Amazon", source=TransactionSource.MERCHANT, reference_id="REF1"
+    )
+    
+    result = reconcile(bank, [merch1, merch2])
+    assert result.status == MatchStatus.REVIEW
+    assert any("Multiple candidates with the identical highest score" in a for a in result.audit_trail)
+
+def test_reconcile_review_clean():
+    bank = BankRecord(
+        record_id="B1", amount=100.0, transaction_date=datetime(2026, 9, 2),
+        description="Amazon", source=TransactionSource.BANK, reference_id="REF1", customer_id="C1"
+    )
+    merch = MerchantRecord(
+        record_id="M1", amount=105.0, transaction_date=datetime(2026, 9, 5),
+        description="Amazon Web Services", source=TransactionSource.MERCHANT, reference_id="REF1", customer_id="C1"
+    )
+    # Ref (+50), Cust (+10), Desc substring (+10) -> Total 70.
+    # Amt diff = 5 <= 10, Date diff = 3 <= 7. No contradictions.
+    
+    result = reconcile(bank, [merch])
+    assert result.status == MatchStatus.REVIEW
+    assert result.candidate.merchant_record.record_id == "M1"
+    assert any("Score 70.0 < 90. Routed to REVIEW." in a for a in result.audit_trail)

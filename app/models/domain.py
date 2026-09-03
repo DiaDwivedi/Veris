@@ -38,6 +38,7 @@ class MatchCandidate(BaseModel):
     matched_rules: list[str] = Field(default_factory=list, description="Rules that contributed to the match score.")
 
 class ReconciliationResult(BaseModel):
+    bank_record: BankRecord
     candidate: Optional[MatchCandidate] = None
     status: MatchStatus
     audit_trail: list[str] = Field(default_factory=list, description="Deterministic steps taken to reach this result.")

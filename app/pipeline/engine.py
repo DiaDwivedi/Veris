@@ -10,6 +10,7 @@ def reconcile(bank_record: BankRecord, merchant_records: list[MerchantRecord]) -
     
     if not candidates:
         return ReconciliationResult(
+            bank_record=bank_record,
             status=MatchStatus.UNMATCHED,
             audit_trail=["No plausible candidates found (all scores < 20)."]
         )
@@ -23,7 +24,7 @@ def reconcile(bank_record: BankRecord, merchant_records: list[MerchantRecord]) -
     
     amt_diff = abs(bank.amount - merch.amount)
     has_contradiction = False
-    if amt_diff > (bank.amount * 0.10):
+    if amt_diff > (abs(bank.amount) * 0.10):
         has_contradiction = True
         audit.append("Contradictory evidence (amount differs by > 10%).")
         
@@ -49,14 +50,14 @@ def reconcile(bank_record: BankRecord, merchant_records: list[MerchantRecord]) -
                 
         if is_safe:
             audit.append("All AUTO Safety Gates Passed.")
-            return ReconciliationResult(candidate=top_candidate, status=MatchStatus.AUTO, audit_trail=audit)
+            return ReconciliationResult(bank_record=bank_record, candidate=top_candidate, status=MatchStatus.AUTO, audit_trail=audit)
         else:
             audit.append("Downgraded to REVIEW due to safety gates.")
-            return ReconciliationResult(candidate=top_candidate, status=MatchStatus.REVIEW, audit_trail=audit)
+            return ReconciliationResult(bank_record=bank_record, candidate=top_candidate, status=MatchStatus.REVIEW, audit_trail=audit)
             
     if top_candidate.confidence_score < 70:
         audit.append(f"Score {top_candidate.confidence_score} < 70. Routed to UNMATCHED.")
-        return ReconciliationResult(candidate=None, status=MatchStatus.UNMATCHED, audit_trail=audit)
+        return ReconciliationResult(bank_record=bank_record, candidate=None, status=MatchStatus.UNMATCHED, audit_trail=audit)
         
     # Plausible candidate >= 70 but failed to hit AUTO (or failed safety gates)
     if has_contradiction:
@@ -64,4 +65,4 @@ def reconcile(bank_record: BankRecord, merchant_records: list[MerchantRecord]) -
     else:
         audit.append(f"Score {top_candidate.confidence_score} < 90. Routed to REVIEW.")
         
-    return ReconciliationResult(candidate=top_candidate, status=MatchStatus.REVIEW, audit_trail=audit)
+    return ReconciliationResult(bank_record=bank_record, candidate=top_candidate, status=MatchStatus.REVIEW, audit_trail=audit)

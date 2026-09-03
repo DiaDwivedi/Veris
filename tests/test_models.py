@@ -25,7 +25,11 @@ def test_bank_record_creation():
     assert record.amount == 100.50
 
 def test_reconciliation_result():
+    bank = BankRecord(
+        record_id="bank_001", amount=100.0, transaction_date=datetime.now(timezone.utc), description="Test"
+    )
     result = ReconciliationResult(
+        bank_record=bank,
         status=MatchStatus.UNMATCHED,
         audit_trail=["No candidate found matching amount and date"]
     )

@@ -24,7 +24,7 @@ def calculate_score(bank_record: BankRecord, merchant_record: MerchantRecord) ->
     else:
         # Check within 0.5% tolerance
         diff = abs(bank_record.amount - merchant_record.amount)
-        if diff <= (bank_record.amount * 0.005):
+        if diff <= (abs(bank_record.amount) * 0.005):
             score += 10
             matched_rules.append("Amount Within 0.5% Tolerance (+10)")
             
