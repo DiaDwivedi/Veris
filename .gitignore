@@ -13,3 +13,12 @@ frontend/dist/
 data/*.db
 data/*.sqlite
 data/*.sqlite3
+.env
+app/db/*.db
+app/db/finance.db
+scratch/
+__pycache__/
+node_modules/
+frontend/dist/ 
+ 
+ 

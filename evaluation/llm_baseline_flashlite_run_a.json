@@ -1,0 +1,565 @@
+{
+  "metadata": {
+    "model_id": "models/gemini-3.5-flash-lite",
+    "temperature": 0,
+    "prompt_version": "v1",
+    "transaction_count": 68,
+    "parse_failure_count": 0,
+    "provider_error_count": 0,
+    "cache_enabled": false
+  },
+  "metrics": {
+    "auto_precision": 1.0,
+    "auto_match_recall": 0.8360655737704918,
+    "candidate_recall": 0.8524590163934426,
+    "auto_rate": 0.75,
+    "review_rate": 0.014705882352941176,
+    "unmatched_rate": 0.23529411764705882
+  },
+  "records": [
+    {
+      "transaction_id": "TXN_0021",
+      "order_id": "ORD_0021",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0076",
+      "order_id": "ORD_0081",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0075",
+      "order_id": "ORD_0079",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0040",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0002",
+      "order_id": "ORD_0002",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0011",
+      "order_id": "ORD_0011",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0043",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0009",
+      "order_id": "ORD_0009",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0054",
+      "order_id": "ORD_0054",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0042",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0012",
+      "order_id": "ORD_0012",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0022",
+      "order_id": "ORD_0022",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0071",
+      "order_id": "ORD_0071",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0004",
+      "order_id": "ORD_0004",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0061",
+      "order_id": "ORD_0061",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0052",
+      "order_id": "ORD_0052",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0072",
+      "order_id": "ORD_0073",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0093",
+      "order_id": "ORD_0093",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0041",
+      "order_id": "ORD_0041",
+      "decision": "REVIEW",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0025",
+      "order_id": "ORD_0025",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0092",
+      "order_id": "ORD_0092",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0006",
+      "order_id": "ORD_0006",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0094",
+      "order_id": "ORD_0094",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0091",
+      "order_id": "ORD_0091",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0056",
+      "order_id": "ORD_0056",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0095",
+      "order_id": "ORD_0095",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0007",
+      "order_id": "ORD_0007",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0057",
+      "order_id": "ORD_0057",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0024",
+      "order_id": "ORD_0024",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0010",
+      "order_id": "ORD_0010",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0029",
+      "order_id": "ORD_0029",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0037",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0085",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0038",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0081",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0084",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0026",
+      "order_id": "ORD_0026",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0083",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0087",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0028",
+      "order_id": "ORD_0028",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0096",
+      "order_id": "ORD_0096",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0073",
+      "order_id": "ORD_0075",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0030",
+      "order_id": "ORD_0030",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0077",
+      "order_id": "ORD_0083",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0062",
+      "order_id": "ORD_0062",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0063",
+      "order_id": "ORD_0063",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0051",
+      "order_id": "ORD_0051",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0097",
+      "order_id": "ORD_0097",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0001",
+      "order_id": "ORD_0001",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0086",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0065",
+      "order_id": "ORD_0065",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0003",
+      "order_id": "ORD_0003",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0023",
+      "order_id": "ORD_0023",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0013",
+      "order_id": "ORD_0013",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0053",
+      "order_id": "ORD_0053",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0036",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0008",
+      "order_id": "ORD_0008",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0044",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0055",
+      "order_id": "ORD_0055",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0039",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0027",
+      "order_id": "ORD_0027",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0074",
+      "order_id": "ORD_0077",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0066",
+      "order_id": "ORD_0066",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0064",
+      "order_id": "ORD_0064",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0082",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0014",
+      "order_id": "ORD_0014",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0005",
+      "order_id": "ORD_0005",
+      "decision": "AUTO",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    },
+    {
+      "transaction_id": "TXN_0045",
+      "order_id": null,
+      "decision": "UNMATCHED",
+      "parse_error": false,
+      "provider_error": false,
+      "raw_response": null
+    }
+  ]
+}
