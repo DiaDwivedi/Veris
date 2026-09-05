@@ -222,6 +222,10 @@ function App() {
                     runDetail={runDetail} 
                     isLoading={isLoading} 
                     onViewEval={() => setShowEval(true)}
+                    onGoHome={() => {
+                        setRunDetail(null);
+                        setShowEval(false);
+                    }}
                 />
             ) : (
                 <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>

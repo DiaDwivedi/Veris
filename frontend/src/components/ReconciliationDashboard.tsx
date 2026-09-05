@@ -9,9 +9,10 @@ interface ReconciliationDashboardProps {
     runDetail: RunDetailResponse;
     isLoading: boolean;
     onViewEval?: () => void;
+    onGoHome?: () => void;
 }
 
-export const ReconciliationDashboard: React.FC<ReconciliationDashboardProps> = ({ runDetail, isLoading, onViewEval }) => {
+export const ReconciliationDashboard: React.FC<ReconciliationDashboardProps> = ({ runDetail, isLoading, onViewEval, onGoHome }) => {
     const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
     const [filter, setFilter] = useState<'all' | 'auto' | 'review' | 'unmatched'>('all');
 
@@ -56,7 +57,20 @@ export const ReconciliationDashboard: React.FC<ReconciliationDashboardProps> = (
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div 
+                    onClick={onGoHome}
+                    style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '8px', 
+                        cursor: onGoHome ? 'pointer' : 'default',
+                        opacity: 1,
+                        transition: 'opacity 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => { if (onGoHome) e.currentTarget.style.opacity = '0.7' }}
+                    onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                    title={onGoHome ? "Back to Landing Screen" : undefined}
+                >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--review)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>
                     </svg>
