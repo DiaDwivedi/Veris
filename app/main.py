@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import router as api_router, router_v2 as api_router_v2
-from app.api.overrides import router as overrides_router
+from app.api.overrides import router as overrides_router, router_v2 as overrides_router_v2
 from app.db.session import init_db
 import logging
 
@@ -25,6 +25,7 @@ app.add_middleware(
 app.include_router(api_router, prefix="/api/v1")
 app.include_router(api_router_v2, prefix="/api/v2")
 app.include_router(overrides_router, prefix="/api/v1/overrides")
+app.include_router(overrides_router_v2, prefix="/api/v2/runs")
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):

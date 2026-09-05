@@ -1,22 +1,35 @@
-from app.models.domain import BankRecord, MerchantRecord, ReconciliationResult, MatchStatus
+from app.models.domain import BankRecord, MerchantRecord, ReconciliationResult, MatchStatus, RoutingReason
 from app.pipeline.matcher import find_candidates
+from app.pipeline.explain import explain_decision
+from app import config
+
+def _finalize_result(result: ReconciliationResult) -> ReconciliationResult:
+    why, explanation = explain_decision(result)
+    result.why = why
+    result.explanation = explanation
+    result.explanation_source = "template"
+    return result
 
 def reconcile(bank_record: BankRecord, merchant_records: list[MerchantRecord]) -> ReconciliationResult:
     """
     Main entry point for reconciling a single bank record against all merchant records.
     Applies score thresholds and hard safety gates to route to AUTO, REVIEW, or UNMATCHED.
     """
-    candidates = find_candidates(bank_record, merchant_records, min_score=20.0)
+    candidates = find_candidates(bank_record, merchant_records, min_score=config.THRESHOLD_MIN_SCORE)
     
     if not candidates:
-        return ReconciliationResult(
+        return _finalize_result(ReconciliationResult(
             bank_record=bank_record,
             status=MatchStatus.UNMATCHED,
-            audit_trail=["No plausible candidates found (all scores < 20)."]
-        )
+            audit_trail=[f"No plausible candidates found (all scores < {config.THRESHOLD_MIN_SCORE})."],
+            routing_reason=RoutingReason.NO_CANDIDATE_ABOVE_FLOOR
+        ))
         
     top_candidate = candidates[0]
     audit = top_candidate.matched_rules.copy()
+    
+    competing_candidates = candidates[1:]
+    signal_scores = top_candidate.signal_scores
     
     # 3. No contradictory evidence (amount > 10% diff, date > 7 days diff)
     bank = top_candidate.bank_record
@@ -24,16 +37,16 @@ def reconcile(bank_record: BankRecord, merchant_records: list[MerchantRecord]) -
     
     amt_diff = abs(bank.amount - merch.amount)
     has_contradiction = False
-    if amt_diff > (abs(bank.amount) * 0.10):
+    if amt_diff > (abs(bank.amount) * config.CONTRADICTION_AMOUNT_PERCENT):
         has_contradiction = True
-        audit.append("Contradictory evidence (amount differs by > 10%).")
+        audit.append(f"Contradictory evidence (amount differs by > {config.CONTRADICTION_AMOUNT_PERCENT*100}%).")
         
     date_diff = abs((bank.transaction_date - merch.transaction_date).days)
-    if date_diff > 7:
+    if date_diff > config.CONTRADICTION_DATE_DAYS:
         has_contradiction = True
-        audit.append("Contradictory evidence (date differs by > 7 days).")
+        audit.append(f"Contradictory evidence (date differs by > {config.CONTRADICTION_DATE_DAYS} days).")
     
-    if top_candidate.confidence_score >= 90 and not has_contradiction:
+    if top_candidate.confidence_score >= config.THRESHOLD_AUTO and not has_contradiction:
         is_safe = True
         
         # 1. Unique highest candidate
@@ -44,25 +57,59 @@ def reconcile(bank_record: BankRecord, merchant_records: list[MerchantRecord]) -
         # 2. Sufficient separation
         if len(candidates) > 1 and is_safe:
             separation = candidates[0].confidence_score - candidates[1].confidence_score
-            if separation < 15:
+            if separation < config.MARGIN_SEPARATION:
                 is_safe = False
-                audit.append(f"Safety Gate Failed: Insufficient separation from runner-up ({separation} pts < 15).")
+                audit.append(f"Safety Gate Failed: Insufficient separation from runner-up ({separation} pts < {config.MARGIN_SEPARATION}).")
                 
         if is_safe:
             audit.append("All AUTO Safety Gates Passed.")
-            return ReconciliationResult(bank_record=bank_record, candidate=top_candidate, status=MatchStatus.AUTO, audit_trail=audit)
+            return _finalize_result(ReconciliationResult(
+                bank_record=bank_record, 
+                candidate=top_candidate, 
+                status=MatchStatus.AUTO, 
+                audit_trail=audit,
+                competing_candidates=competing_candidates,
+                signal_scores=signal_scores,
+                routing_reason=RoutingReason.AUTO_THRESHOLD_MET
+            ))
         else:
             audit.append("Downgraded to REVIEW due to safety gates.")
-            return ReconciliationResult(bank_record=bank_record, candidate=top_candidate, status=MatchStatus.REVIEW, audit_trail=audit)
+            return _finalize_result(ReconciliationResult(
+                bank_record=bank_record, 
+                candidate=top_candidate, 
+                status=MatchStatus.REVIEW, 
+                audit_trail=audit,
+                competing_candidates=competing_candidates,
+                signal_scores=signal_scores,
+                routing_reason=RoutingReason.NEAR_TIE
+            ))
             
-    if top_candidate.confidence_score < 70:
-        audit.append(f"Score {top_candidate.confidence_score} < 70. Routed to UNMATCHED.")
-        return ReconciliationResult(bank_record=bank_record, candidate=None, status=MatchStatus.UNMATCHED, audit_trail=audit)
+    if top_candidate.confidence_score < config.THRESHOLD_REVIEW:
+        audit.append(f"Score {top_candidate.confidence_score} < {config.THRESHOLD_REVIEW}. Routed to UNMATCHED.")
+        return _finalize_result(ReconciliationResult(
+            bank_record=bank_record, 
+            candidate=None, 
+            status=MatchStatus.UNMATCHED, 
+            audit_trail=audit,
+            competing_candidates=candidates, # all candidates are competing/considered, but none selected
+            signal_scores={},
+            routing_reason=RoutingReason.NO_CANDIDATE_ABOVE_FLOOR
+        ))
         
-    # Plausible candidate >= 70 but failed to hit AUTO (or failed safety gates)
+    # Plausible candidate >= THRESHOLD_REVIEW but failed to hit AUTO (or failed safety gates)
     if has_contradiction:
-        audit.append("Candidate >= 70 but contradictory evidence found. Routed to REVIEW.")
+        audit.append(f"Candidate >= {config.THRESHOLD_REVIEW} but contradictory evidence found. Routed to REVIEW.")
+        reason = RoutingReason.CONTRADICTION
     else:
-        audit.append(f"Score {top_candidate.confidence_score} < 90. Routed to REVIEW.")
+        audit.append(f"Score {top_candidate.confidence_score} < {config.THRESHOLD_AUTO}. Routed to REVIEW.")
+        reason = RoutingReason.BELOW_AUTO_THRESHOLD
         
-    return ReconciliationResult(bank_record=bank_record, candidate=top_candidate, status=MatchStatus.REVIEW, audit_trail=audit)
+    return _finalize_result(ReconciliationResult(
+        bank_record=bank_record, 
+        candidate=top_candidate, 
+        status=MatchStatus.REVIEW, 
+        audit_trail=audit,
+        competing_candidates=competing_candidates,
+        signal_scores=signal_scores,
+        routing_reason=reason
+    ))

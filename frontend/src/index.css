@@ -1,18 +1,39 @@
 :root {
-  --hero-bg: #061713;
-  --primary-accent: #2FE0A8;
-  --hero-muted-label: #5B9284;
-  --hero-muted-subtext: #9FBBB2;
-  --hero-secondary-number: #2B4A42;
-  --body-ink: #0E1210;
-  --muted-gray: #6B6A63;
-  --lighter-muted: #8A8880;
-  --faint-muted: #B9B7AC;
-  --table-hairlines: #D8D6CB;
-  --selected-row-tint: #FAF9F4;
-  --auto-status: #0F6E56;
-  --review-status: #0E1210;
-  
+  /* BASE BACKGROUNDS */
+  --bg: #151515;
+  --surface: #1A1A19;
+  --surface-deep: #131516;
+  --surface-inset: #101112;
+
+  /* BORDERS */
+  --border: #313130;
+  --border-subtle: #2B2B2A;
+  --divider: #656453;
+
+  /* TEXT */
+  --text-primary: #DAD9D6;
+  --text: #BCBBB9;
+  --text-muted: #9B9A98;
+  --text-faint: #656463;
+
+  /* AUTO */
+  --auto: #639922;
+  --auto-bg: #0E1E0C;
+
+  /* REVIEW */
+  --review: #C19157;
+  --review-dark: #845305;
+  --review-bg: #271500;
+
+  /* UNMATCHED */
+  --unmatched-bg: #20201F;
+  --unmatched-border: #4D4D4C;
+  --unmatched-text: #ADADAB;
+
+  /* ERRORS */
+  --error: #8A2B2B;
+  --error-bg: #2C0F0F;
+
   --font-serif: Georgia, "Times New Roman", serif;
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
@@ -21,12 +42,13 @@ body {
   margin: 0;
   padding: 0;
   font-family: var(--font-sans);
-  color: var(--body-ink);
-  background: white;
+  color: var(--text);
+  background: var(--bg);
 }
 
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
+  color: var(--text-primary);
 }
 
 * {
@@ -59,6 +81,11 @@ h1, h2, h3, h4, h5, h6 {
   text-underline-offset: 4px;
   font-size: 13px;
   font-family: var(--font-sans);
+  color: var(--text);
+}
+
+.action-link:hover {
+  color: var(--text-primary);
 }
 
 .action-link:disabled {

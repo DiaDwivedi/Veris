@@ -1,44 +1,40 @@
-import React, { useState } from 'react';
-import type { BankRecord, WrappedReconciliationResult } from '../types';
+import React from 'react';
+import type { RecordDetail } from '../types';
 import { LedgerRow } from './LedgerRow';
 
 interface LedgerTableProps {
-    transactions: BankRecord[];
-    results: WrappedReconciliationResult[];
+    records: RecordDetail[];
+    selectedId: string | null;
+    onSelect: (id: string) => void;
 }
 
-export const LedgerTable: React.FC<LedgerTableProps> = ({ transactions, results }) => {
-    const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-
-    const handleToggle = (index: number) => {
-        setExpandedIndex(prev => prev === index ? null : index);
-    };
-
+export const LedgerTable: React.FC<LedgerTableProps> = ({ records, selectedId, onSelect }) => {
     return (
         <table style={{
             width: '100%',
             borderCollapse: 'collapse',
+            tableLayout: 'fixed',
             marginTop: '1rem',
             textAlign: 'left',
             fontFamily: 'var(--font-sans)',
-            fontSize: '14px'
+            fontSize: '13px'
         }}>
-            <thead>
+            <thead style={{ position: 'sticky', top: 0, backgroundColor: 'var(--bg)', zIndex: 1 }}>
                 <tr>
-                    <th style={{ borderBottom: '2px solid var(--body-ink)', padding: '10px 0', paddingLeft: '8px', fontWeight: 'normal', color: 'var(--muted-gray)' }}>Transaction</th>
-                    <th style={{ borderBottom: '2px solid var(--body-ink)', padding: '10px 0', fontWeight: 'normal', color: 'var(--muted-gray)' }}>Matched to</th>
-                    <th style={{ borderBottom: '2px solid var(--body-ink)', padding: '10px 0', textAlign: 'right', fontWeight: 'normal', color: 'var(--muted-gray)' }}>Confidence</th>
-                    <th style={{ borderBottom: '2px solid var(--body-ink)', padding: '10px 0', textAlign: 'right', paddingRight: '8px', fontWeight: 'normal', color: 'var(--muted-gray)' }}>Outcome</th>
+                    <th style={{ borderBottom: '1px solid var(--border-subtle)', padding: '4px 8px', fontWeight: 'bold', color: 'var(--text-muted)', width: '15%' }}>Transaction</th>
+                    <th style={{ borderBottom: '1px solid var(--border-subtle)', padding: '4px 8px', fontWeight: 'bold', color: 'var(--text-muted)', width: '15%' }}>Proposed Match</th>
+                    <th style={{ borderBottom: '1px solid var(--border-subtle)', padding: '4px 8px', fontWeight: 'bold', color: 'var(--text-muted)', width: '45%' }}>Why</th>
+                    <th style={{ borderBottom: '1px solid var(--border-subtle)', padding: '4px 8px', textAlign: 'right', fontWeight: 'bold', color: 'var(--text-muted)', width: '10%' }}>Score</th>
+                    <th style={{ borderBottom: '1px solid var(--border-subtle)', padding: '4px 8px', textAlign: 'right', fontWeight: 'bold', color: 'var(--text-muted)', width: '15%' }}>Decision</th>
                 </tr>
             </thead>
             <tbody>
-                {transactions.map((txn, index) => (
+                {records.map((rec) => (
                     <LedgerRow 
-                        key={txn.record_id}
-                        transaction={txn}
-                        result={results[index]}
-                        isExpanded={expandedIndex === index}
-                        onToggle={() => handleToggle(index)}
+                        key={rec.transaction_id}
+                        record={rec}
+                        isSelected={selectedId === rec.transaction_id}
+                        onSelect={() => onSelect(rec.transaction_id)}
                     />
                 ))}
             </tbody>

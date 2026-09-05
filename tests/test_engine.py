@@ -69,7 +69,7 @@ def test_reconcile_review_contradictory_amount():
     
     result = reconcile(bank, [merch])
     assert result.status == MatchStatus.REVIEW
-    assert any("Contradictory evidence (amount differs by > 10%)" in a for a in result.audit_trail)
+    assert any("Contradictory evidence (amount differs by > 10.0%)" in a for a in result.audit_trail)
 
 def test_reconcile_unmatched_score_below_70():
     bank = BankRecord(
@@ -85,7 +85,7 @@ def test_reconcile_unmatched_score_below_70():
     result = reconcile(bank, [merch])
     assert result.status == MatchStatus.UNMATCHED
     assert result.candidate is None
-    assert any("Score 60.0 < 70. Routed to UNMATCHED." in a for a in result.audit_trail)
+    assert any("Score 60.0 < 70.0. Routed to UNMATCHED." in a for a in result.audit_trail)
 
 def test_reconcile_review_contradictory_date():
     bank = BankRecord(
@@ -136,4 +136,4 @@ def test_reconcile_review_clean():
     result = reconcile(bank, [merch])
     assert result.status == MatchStatus.REVIEW
     assert result.candidate.merchant_record.record_id == "M1"
-    assert any("Score 70.0 < 90. Routed to REVIEW." in a for a in result.audit_trail)
+    assert any("Score 70.0 < 90.0. Routed to REVIEW." in a for a in result.audit_trail)

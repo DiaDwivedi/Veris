@@ -1,81 +1,84 @@
-import React, { useState } from 'react';
-import type { BankRecord, WrappedReconciliationResult, OverrideRecord } from '../types';
-import { DetailPanel } from './DetailPanel';
+import React from 'react';
+import type { RecordDetail } from '../types';
 
 interface LedgerRowProps {
-    transaction: BankRecord;
-    result: WrappedReconciliationResult;
-    isExpanded: boolean;
-    onToggle: () => void;
+    record: RecordDetail;
+    isSelected: boolean;
+    onSelect: () => void;
 }
 
-export const LedgerRow: React.FC<LedgerRowProps> = ({ transaction, result, isExpanded, onToggle }) => {
-    const res = result.deterministic_result;
-    const [override, setOverride] = useState<OverrideRecord | null>(result.manual_override);
+export const LedgerRow: React.FC<LedgerRowProps> = ({ record, isSelected, onSelect }) => {
+    const res = record.deterministic_result;
+    
+    // Override history check
+    const hasOverrides = record.override_history.length > 0;
+    const latestOverride = hasOverrides ? record.override_history[record.override_history.length - 1] : null;
     
     let statusText: string = res.status;
-    let statusBorderColor = '';
-    let statusTextColor = '';
-    
-    if (override) {
-        statusText = override.action;
-        statusBorderColor = override.action === 'approve' ? 'var(--auto-status)' : 'var(--muted-gray)';
-        statusTextColor = override.action === 'approve' ? 'var(--auto-status)' : 'var(--muted-gray)';
+    let statusBgColor = 'transparent';
+    let statusTextColor = 'var(--text)';
+
+    if (latestOverride) {
+        statusText = latestOverride.action;
+        if (latestOverride.action === 'approve') {
+            statusTextColor = 'var(--auto)';
+            statusBgColor = 'var(--auto-bg)';
+        } else if (latestOverride.action === 'reject') {
+            statusTextColor = 'var(--text-primary)';
+            statusBgColor = 'var(--surface)';
+        }
     } else {
-        const baseColor = res.status === 'auto' ? 'var(--auto-status)' : 
-                          res.status === 'review' ? 'var(--review-status)' : 
-                          'var(--faint-muted)';
-                          
-        statusTextColor = res.status === 'unmatched' ? 'var(--lighter-muted)' : baseColor;
-        statusBorderColor = res.status === 'unmatched' ? 'var(--faint-muted)' : baseColor;
+        if (res.status === 'auto') {
+            statusTextColor = 'var(--auto)';
+            statusBgColor = 'var(--auto-bg)';
+        } else if (res.status === 'review') {
+            statusTextColor = 'var(--review)';
+            statusBgColor = 'var(--review-bg)';
+        } else if (res.status === 'unmatched') {
+            statusTextColor = 'var(--unmatched-text)';
+            statusBgColor = 'var(--unmatched-bg)';
+        }
     }
 
     const matchedTo = res.candidate ? res.candidate.merchant_record.record_id : '—';
-    const confidence = res.candidate ? res.candidate.confidence_score.toFixed(1) : '—';
+    const confidence = res.candidate ? Math.round(res.candidate.confidence_score) + '/100' : '—';
+    const whyText = res.why || '—';
 
     return (
-        <React.Fragment>
-            <tr 
-                onClick={onToggle}
-                style={{ 
-                    borderBottom: '1px solid var(--table-hairlines)',
-                    backgroundColor: isExpanded ? 'var(--selected-row-tint)' : 'transparent',
-                    cursor: 'pointer'
-                }}
-            >
-                <td className="tabular-nums" style={{ padding: '10px 0', paddingLeft: '8px' }}>
-                    {transaction.record_id}
-                </td>
-                <td style={{ padding: '10px 0' }}>
-                    {matchedTo}
-                </td>
-                <td className="tabular-nums" style={{ padding: '10px 0', textAlign: 'right' }}>
-                    {confidence}
-                </td>
-                <td style={{ padding: '10px 0', textAlign: 'right', paddingRight: '8px' }}>
-                    <span className="lowercase" style={{
-                        display: 'inline-block',
-                        border: `1px solid ${statusBorderColor}`,
-                        color: statusTextColor,
-                        padding: '2px 8px',
-                        borderRadius: '20px',
-                        fontSize: '11px',
-                        backgroundColor: 'transparent'
-                    }}>
-                        {statusText}
-                    </span>
-                </td>
-            </tr>
-            {isExpanded && (
-                <tr style={{ backgroundColor: 'var(--selected-row-tint)', borderBottom: '1px solid var(--table-hairlines)' }}>
-                    <DetailPanel 
-                        transaction={transaction} 
-                        result={result} 
-                        override={override}
-                        setOverride={setOverride}
-                    />
-                </tr>
-            )}
-        </React.Fragment>
+        <tr 
+            onClick={onSelect}
+            style={{ 
+                borderBottom: '1px solid var(--border-subtle)',
+                backgroundColor: isSelected ? 'var(--surface-deep)' : 'transparent',
+                cursor: 'pointer'
+            }}
+        >
+            <td className="tabular-nums" style={{ padding: '4px 8px', color: 'var(--text-primary)', fontSize: '12px' }}>
+                {record.transaction_id}
+            </td>
+            <td className="tabular-nums" style={{ padding: '4px 8px', color: 'var(--text)', fontSize: '12px' }}>
+                {matchedTo}
+            </td>
+            <td style={{ padding: '4px 8px', color: 'var(--text-primary)', fontSize: '12px', lineHeight: 1.2 }}>
+                {whyText}
+            </td>
+            <td className="tabular-nums" style={{ padding: '4px 8px', textAlign: 'right', color: 'var(--text-primary)', fontWeight: 'bold', fontSize: '12px' }}>
+                {confidence}
+            </td>
+            <td style={{ padding: '4px 8px', textAlign: 'right' }}>
+                <span className="uppercase" style={{
+                    display: 'inline-block',
+                    color: statusTextColor,
+                    backgroundColor: statusBgColor,
+                    padding: '2px 8px',
+                    borderRadius: '12px',
+                    fontSize: '10px',
+                    fontWeight: 'bold',
+                    letterSpacing: '0.5px'
+                }}>
+                    {statusText}
+                </span>
+            </td>
+        </tr>
     );
 };

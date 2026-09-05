@@ -1,4 +1,6 @@
 import csv
+import json
+import os
 from collections import defaultdict
 from datetime import datetime
 from app.models.domain import BankRecord, MerchantRecord, MatchStatus
@@ -67,21 +69,13 @@ def evaluate():
     correct_auto = 0
     correct_candidates_generated = 0
     
-    # Confusion Matrix: {pred_status: {gt_status: count}}
-    confusion = {
-        MatchStatus.AUTO: defaultdict(int),
-        MatchStatus.REVIEW: defaultdict(int),
-        MatchStatus.UNMATCHED: defaultdict(int),
-    }
-    
     scenario_stats = defaultdict(lambda: {
         'total': 0, 'with_match': 0,
         'routed_auto': 0, 'correct_auto': 0, 'correct_candidates_generated': 0
     })
     
-    incorrect_autos = []
-    incorrect_reviews = []
-    expected_unmatched = []
+    # To store detailed evaluation per transaction
+    eval_details = []
     
     print(f"Evaluating {total_records} transactions...")
     for txn in transactions:
@@ -105,7 +99,6 @@ def evaluate():
         result = reconcile(txn, orders)
         
         pred_status = result.status
-        confusion[pred_status][gt_status] += 1
         
         if pred_status == MatchStatus.AUTO:
             routed_auto += 1
@@ -115,104 +108,97 @@ def evaluate():
         else:
             routed_unmatched += 1
             
-        # Correctness logic (only applies if ground truth has a match)
+        # Pair correctness and Decision correctness logic
+        candidate_ids = [c.merchant_record.record_id for c in candidates]
+        was_candidate_generated = true_order_id in candidate_ids if has_gt_match else None
+        
+        selected_candidate_id = result.candidate.merchant_record.record_id if result.candidate else None
+        
+        # Pair correctness: did the proposed order match true_order_id?
+        is_pair_correct = (selected_candidate_id == true_order_id) if has_gt_match else (selected_candidate_id is None)
+        
+        # Decision correctness: did AUTO/REVIEW/UNMATCHED match decision_ground_truth?
+        is_decision_correct = (pred_status.value == gt_status)
+        
         if has_gt_match:
-            candidate_ids = [c.merchant_record.record_id for c in candidates]
-            was_candidate_generated = true_order_id in candidate_ids
-            
-            selected_candidate_id = result.candidate.merchant_record.record_id if result.candidate else None
-            is_selected_correct = (selected_candidate_id == true_order_id)
-            
             if pred_status in (MatchStatus.AUTO, MatchStatus.REVIEW) and was_candidate_generated:
                 correct_candidates_generated += 1
                 scenario_stats[scenario]['correct_candidates_generated'] += 1
                 
             if pred_status == MatchStatus.AUTO:
-                if is_selected_correct:
+                if is_pair_correct:
                     correct_auto += 1
                     scenario_stats[scenario]['correct_auto'] += 1
-                else:
-                    incorrect_autos.append({
-                        'txn': txn.record_id,
-                        'true_id': true_order_id,
-                        'pred_id': selected_candidate_id,
-                        'audit': result.audit_trail
-                    })
-                    
-            if pred_status == MatchStatus.REVIEW and not is_selected_correct:
-                incorrect_reviews.append({
-                    'txn': txn.record_id,
-                    'true_id': true_order_id,
-                    'pred_id': selected_candidate_id,
-                    'audit': result.audit_trail
-                })
-                
-            if pred_status == MatchStatus.UNMATCHED:
-                expected_unmatched.append({
-                    'txn': txn.record_id,
-                    'true_id': true_order_id,
-                    'audit': result.audit_trail
-                })
+
+        eval_details.append({
+            "transaction_id": txn.record_id,
+            "scenario": scenario,
+            "true_order_id": true_order_id,
+            "predicted_order_id": selected_candidate_id,
+            "true_decision": gt_status,
+            "predicted_decision": pred_status.value,
+            "is_pair_correct": is_pair_correct,
+            "is_decision_correct": is_decision_correct,
+            "was_candidate_generated": was_candidate_generated,
+            "routing_reason": result.routing_reason.value if result.routing_reason else None,
+            "why": result.why,
+            "explanation": result.explanation
+        })
                 
     # Calculate Final Metrics
     auto_precision = (correct_auto / routed_auto) if routed_auto > 0 else None
     auto_match_recall = (correct_auto / records_with_match) if records_with_match > 0 else None
     candidate_recall = (correct_candidates_generated / records_with_match) if records_with_match > 0 else None
     
-    auto_rate = routed_auto / total_records
-    review_rate = routed_review / total_records
-    unmatched_rate = routed_unmatched / total_records
+    auto_rate = (routed_auto / total_records) if total_records > 0 else 0.0
+    review_rate = (routed_review / total_records) if total_records > 0 else 0.0
+    unmatched_rate = (routed_unmatched / total_records) if total_records > 0 else 0.0
     
     print("\n" + "="*50)
     print("MATCHING ENGINE EVALUATION RESULTS")
     print("="*50)
     
-    print(f"\n1. AUTO Precision: {auto_precision*100:.1f}%" if auto_precision is not None else "\n1. AUTO Precision: N/A")
-    print(f"2. Overall Candidate Recall: {candidate_recall*100:.1f}%")
-    print(f"3. AUTO-match Recall: {auto_match_recall*100:.1f}%")
+    if auto_precision is not None:
+        print(f"\n1. AUTO Precision: {auto_precision*100:.1f}% ({correct_auto} of {routed_auto} correct)")
+    else:
+        print("\n1. AUTO Precision: N/A")
+        
+    print(f"2. Overall Candidate Recall: {(candidate_recall or 0.0)*100:.1f}%")
+    print(f"3. AUTO-match Recall: {(auto_match_recall or 0.0)*100:.1f}%")
     print(f"4. AUTO Rate: {auto_rate*100:.1f}%")
     print(f"5. REVIEW Rate: {review_rate*100:.1f}%")
     print(f"6. UNMATCHED Rate: {unmatched_rate*100:.1f}%")
+        
+    # Write JSON Artifact
+    os.makedirs("evaluation/results", exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    artifact_path = f"evaluation/results/evaluation_run_{timestamp}.json"
     
-    print("\n--- Confusion Matrix (Predicted vs Ground Truth) ---")
-    print(f"{'Predicted':<15} | {'GT_AUTO':<10} | {'GT_REVIEW':<10} | {'GT_UNMATCHED':<12}")
-    print("-" * 55)
-    for pred in [MatchStatus.AUTO, MatchStatus.REVIEW, MatchStatus.UNMATCHED]:
-        c = confusion[pred]
-        print(f"{pred.value.upper():<15} | {c['AUTO']:<10} | {c['REVIEW']:<10} | {c['UNMATCHED']:<12}")
+    artifact = {
+        "metadata": {
+            "split": "dev",
+            "timestamp": datetime.now().isoformat(),
+            "dataset_size": total_records,
+            "records_with_match": records_with_match
+        },
+        "metrics": {
+            "auto_precision_percentage": auto_precision * 100 if auto_precision is not None else None,
+            "auto_precision_correct": correct_auto,
+            "auto_precision_total": routed_auto,
+            "auto_match_recall": auto_match_recall,
+            "candidate_recall": candidate_recall,
+            "auto_rate": auto_rate,
+            "review_rate": review_rate,
+            "unmatched_rate": unmatched_rate
+        },
+        "scenario_breakdown": dict(scenario_stats),
+        "details": eval_details
+    }
+    
+    with open(artifact_path, 'w', encoding='utf-8') as f:
+        json.dump(artifact, f, indent=2)
         
-    print("\n--- Scenario-level Performance ---")
-    for sc, stats in scenario_stats.items():
-        if stats['with_match'] > 0:
-            rec = stats['correct_candidates_generated'] / stats['with_match']
-            auto_rec = stats['correct_auto'] / stats['with_match']
-        else:
-            rec = 0.0
-            auto_rec = 0.0
-        print(f"Scenario: {sc} (Total: {stats['total']}, With Match: {stats['with_match']})")
-        print(f"  Candidate Recall: {rec*100:.1f}%")
-        print(f"  AUTO-match Recall: {auto_rec*100:.1f}%")
-        
-    if incorrect_autos:
-        print(f"\n[CRITICAL] {len(incorrect_autos)} INCORRECT AUTO MATCHES FOUND:")
-        for err in incorrect_autos:
-            print(f"  TXN: {err['txn']} | Predicted: {err['pred_id']} | True: {err['true_id']}")
-            print("  Audit Trail:")
-            for a in err['audit']:
-                print(f"    - {a}")
-                
-    if incorrect_reviews:
-        print(f"\n[WARNING] {len(incorrect_reviews)} Incorrect REVIEW selections found:")
-        for err in incorrect_reviews[:5]: # Show first 5
-            print(f"  TXN: {err['txn']} | Predicted: {err['pred_id']} | True: {err['true_id']}")
-            
-    if expected_unmatched:
-        print(f"\n[WARNING] {len(expected_unmatched)} Expected matches became UNMATCHED:")
-        for err in expected_unmatched[:5]: # Show first 5
-            print(f"  TXN: {err['txn']} | True: {err['true_id']}")
-            print("  Audit Trail:")
-            for a in err['audit']:
-                print(f"    - {a}")
+    print(f"\nEvaluation completed. JSON artifact saved to {artifact_path}")
                 
 if __name__ == "__main__":
     evaluate()

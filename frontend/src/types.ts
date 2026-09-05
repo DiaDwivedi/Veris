@@ -21,6 +21,12 @@ export interface BankRecord extends TransactionRecord {
     source: "bank";
 }
 
+export interface SignalScore {
+    earned: number;
+    max: number;
+    outcome: string;
+}
+
 export interface MatchCandidate {
     merchant_record: MerchantRecord;
     bank_record: BankRecord;
@@ -32,6 +38,12 @@ export interface ReconciliationResult {
     candidate: MatchCandidate | null;
     status: MatchStatus;
     audit_trail: string[];
+    why: string;
+    explanation: string;
+    explanation_source: string;
+    routing_reason: string | null;
+    signal_scores: Record<string, SignalScore>;
+    competing_candidates: MatchCandidate[];
 }
 
 export interface BatchReconcileRequest {
@@ -39,16 +51,37 @@ export interface BatchReconcileRequest {
     orders: MerchantRecord[];
 }
 
-export interface OverrideRecord {
+export interface OverrideRecordV2 {
+    override_id: string;
     action: "approve" | "reject";
-    timestamp: string;
+    candidate_id?: string | null;
+    reviewer_note?: string | null;
+    created_at: string;
 }
 
-export interface WrappedReconciliationResult {
+export interface RecordDetail {
+    transaction_id: string;
     deterministic_result: ReconciliationResult;
-    manual_override: OverrideRecord | null;
+    override_history: OverrideRecordV2[];
 }
 
-export interface BatchReconcileResponseV2 {
-    results: WrappedReconciliationResult[];
+export interface RunSummary {
+    run_id: string;
+    status: string;
+    created_at: string;
+    config_version: string;
+    batch_size: number;
+}
+
+export interface RunDetailResponse {
+    run: RunSummary;
+    records: RecordDetail[];
+}
+
+export interface RunCreationResponse {
+    run_id: string;
+    status: string;
+    summary: {
+        total_processed: number;
+    };
 }
