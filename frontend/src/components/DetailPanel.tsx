@@ -29,7 +29,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({ record, runId, onClose
                 action: action,
                 candidate_id: action === 'approve' ? candId : null
             };
-            const response = await fetch(`http://127.0.0.1:8000/api/v2/runs/${runId}/records/${record.transaction_id}/override`, {
+            const response = await fetch(`/api/v2/runs/${runId}/records/${record.transaction_id}/override`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
