@@ -1,6 +1,6 @@
 # VERIS
 
-**Built to decide. Designed to prove.**
+**Built to decide. Designed to prove..**
 
 Deterministic transaction-to-order reconciliation with a full audit trail, a
 held-out evaluation, and a measured LLM baseline.
