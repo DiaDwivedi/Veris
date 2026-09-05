@@ -10,7 +10,7 @@ held-out evaluation, and a measured LLM baseline.
 
 ---
 
-## The finding
+## The Finding
 
 The obvious way to build this in 2026 is to hand each transaction and its
 candidate orders to a language model and ask which one matches. So that was the
