@@ -8,6 +8,7 @@ held-out evaluation, and a measured LLM baseline.
 **Live:** https://veris-4d52.onrender.com — free tier, so the first load can take
 ~50 seconds while the instance wakes.
 
+**Demo:** [5-minute walkthrough](https://drive.google.com/file/d/1Frr4sWzPhrVrBuqZnSHVXPfPs9YfZSMz/view?usp=sharing)
 ---
 
 ## The Finding
