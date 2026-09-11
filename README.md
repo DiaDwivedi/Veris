@@ -27,6 +27,8 @@ of 68 decisions differed across two identical runs.
 That result is on the evaluation screen in the app, marked as a loss, because it
 is one.
 
+Reconciliation has an asymmetry that makes this matter: a wrong auto-match marks the record resolved and removes it from the queue, so nobody goes looking for it again. A missed match stays in the queue where someone eventually finds it. One failure is silent, the other is self-correcting — which is why the system is tuned to decline rather than to maximise matches, and why being able to show why a record was closed is worth trading recall for.
+
 So the argument for the deterministic engine is not accuracy. It is that a
 reconciliation decision needs properties accuracy doesn't cover: which signal
 carried the decision, what threshold it crossed, a config you can freeze and
