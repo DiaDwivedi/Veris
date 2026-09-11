@@ -8,9 +8,10 @@ held-out evaluation, and a measured LLM baseline.
 **Live:** https://veris-4d52.onrender.com — free tier, so the first load can take
 ~50 seconds while the instance wakes.
 
+**Demo:** [5-minute walkthrough](https://drive.google.com/file/d/1Frr4sWzPhrVrBuqZnSHVXPfPs9YfZSMz/view?usp=sharing)
 ---
 
-## The finding
+## The Finding
 
 The obvious way to build this in 2026 is to hand each transaction and its
 candidate orders to a language model and ask which one matches. So that was the
@@ -31,6 +32,15 @@ reconciliation decision needs properties accuracy doesn't cover: which signal
 carried the decision, what threshold it crossed, a config you can freeze and
 point at in a commit, and an override that is recorded as an override. The
 baseline gave a better number and none of that.
+
+
+The obvious objection: if the baseline is more accurate and needs far less review, why not let it decide and have the engine produce the audit trail afterwards?
+
+The engine's answer and this is an argued position, not a demonstrated one , is that an explanation generated after a decision is a rationalisation, not a record. If the model picks the match and the engine explains it, the engine is reverse-engineering a justification for a choice it didn't make — and when they disagree, it would be describing evidence that doesn't support the outcome. A reason code from the model has the same problem: it's text produced in the same forward pass as the answer, with nothing tying it to what actually drove the output.
+
+The engine's explanation isn't a description of the computation. It is the computation. That's the property that doesn't survive the swap.
+
+A stronger version of the objection is to run both — let the model decide and generate the scorecard alongside as instrumentation. That has a different problem: it needs an answer to which decision governs when they disagree. Whichever you pick, one system is deciding and the other is producing an artifact about a choice it didn't make.
 
 ---
 
@@ -82,6 +92,15 @@ Provider errors        Run A 0 · Run B 0
 
 Reproducibility was the original hypothesis and it did not hold. Reported
 anyway.
+The deterministic engine was run twice over the same dev split: **0 of 68
+decisions differed**, comparing every field of every record, not just the
+aggregate metrics.
+
+Same number as the baseline — different kind of claim. The baseline was
+reproducible on one model version, on one day, with a provider that can change
+it without anything appearing in this repository. The engine is reproducible by
+construction: `reconcile()` is pure, the config is a committed file, and there is
+no source of variation that isn't visible in the call.
 
 ---
 
