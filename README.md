@@ -144,7 +144,7 @@ rather than re-tuning and invalidating the held-out run. It's disclosed on the
 evaluation screen in the app too.
 
 `reconcile(transactions, orders, config) -> RunResult` is a pure function — no
-database, no network, no timestamps generated inside it. The API layer contains zero matching logic — app/api/endpoints.py calls engine.reconcile() and persists the result; no scoring function is imported there.
+database, no network, no timestamps generated inside it. The API layer contains zero matching logic: app/api/endpoints.py imports only engine, calls engine.reconcile(), and persists the result. No scoring or matching function is called there.
 
 Decision rows are immutable — there is no UPDATE path for them anywhere in app/api/. Reviewer overrides are inserts into a separate table (app/api/overrides.py) with timestamp, prior decision, new decision, and the selected candidate, and tests/test_overrides.py::test_v2_override_append_only asserts that successive overrides accumulate rather than replace one anoth
 
