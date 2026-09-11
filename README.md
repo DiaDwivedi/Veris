@@ -91,6 +91,15 @@ Provider errors        Run A 0 · Run B 0
 
 Reproducibility was the original hypothesis and it did not hold. Reported
 anyway.
+The deterministic engine was run twice over the same dev split: **0 of 68
+decisions differed**, comparing every field of every record, not just the
+aggregate metrics.
+
+Same number as the baseline — different kind of claim. The baseline was
+reproducible on one model version, on one day, with a provider that can change
+it without anything appearing in this repository. The engine is reproducible by
+construction: `reconcile()` is pure, the config is a committed file, and there is
+no source of variation that isn't visible in the call.
 
 ---
 
