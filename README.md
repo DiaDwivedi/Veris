@@ -57,9 +57,7 @@ A stronger version of the objection is to run both — let the model decide and 
 | REVIEW rate | 28.1% |
 | UNMATCHED rate | 9.4% |
 
-32 transactions the frozen config had never seen. Recall on test came out
-slightly higher than on dev (69.0% vs 63.9%), which is the opposite of
-overfitting.
+32 transactions the frozen config had never seen. Recall on test came out slightly higher than on dev (69.0% vs 63.9%). That's consistent with not overfitting, though 32 records is too few to conclude much from a five-point difference.
 
 Artifact: `evaluation/results/evaluation_run_20260905_143611.json`
 
@@ -90,8 +88,7 @@ Parse failures         Run A 0 · Run B 0
 Provider errors        Run A 0 · Run B 0
 ```
 
-Reproducibility was the original hypothesis and it did not hold. Reported
-anyway.
+The original hypothesis was that the baseline would vary across identical runs. It didn't. Reported anyway.
 The deterministic engine was run twice over the same dev split: **0 of 68
 decisions differed**, comparing every field of every record, not just the
 aggregate metrics.
