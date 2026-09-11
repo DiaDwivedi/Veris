@@ -37,7 +37,7 @@ Add this after the paragraph beginning "So the argument for the deterministic en
 
 The obvious objection: if the baseline is more accurate and needs far less review, why not let it decide and have the engine produce the audit trail afterwards?
 
-Because an explanation generated after a decision is a rationalisation, not a record. If the model picks the match and the engine explains it, the engine is reverse-engineering a justification for a choice it didn't make — and when they disagree, it would be describing evidence that doesn't support the outcome. A reason code from the model has the same problem: it's text produced in the same forward pass as the answer, with nothing tying it to what actually drove the output.
+The engine's answer and this is an argued position, not a demonstrated one , is that an explanation generated after a decision is a rationalisation, not a record. If the model picks the match and the engine explains it, the engine is reverse-engineering a justification for a choice it didn't make — and when they disagree, it would be describing evidence that doesn't support the outcome. A reason code from the model has the same problem: it's text produced in the same forward pass as the answer, with nothing tying it to what actually drove the output.
 
 The engine's explanation isn't a description of the computation. It is the computation. That's the property that doesn't survive the swap.
 
